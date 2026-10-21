@@ -1,12 +1,12 @@
 {
  "id": "mp1376",
  "titulo": "Renegociação de dívidas rurais – MP 1.376/2026",
- "subtitulo": "Operações de crédito rural contratadas para quitar ou amortizar dívidas de produtores atingidos por eventos climáticos e queda de preços (Res. CMN 5.330/2026).",
- "fontes": "Fonte: Banco Central do Brasil, SICOR (microdados de renegociação, bases legais 050 e 051). Elaboração: Sistema FARSUL.",
+ "subtitulo": "Operações de crédito rural contratadas para quitar ou amortizar dívidas de produtores atingidos por eventos climáticos e queda de preços (Res. CMN 5.330/2026). Não inclui as renegociações de Cédulas de Produto Rural (CPR, art. 6º da MP), que não são registradas no SICOR.",
+ "fontes": "Fonte: Banco Central do Brasil, SICOR (microdados de renegociação, bases legais 050 e 051; não inclui CPR). Elaboração: Sistema FARSUL.",
  "dataBase": "2026-09-30",
  "dataMP": "2026-07-15",
  "prazo": "2026-11-12",
- "atualizado": "2026-10-20",
+ "atualizado": "2026-10-21",
  "dias": [
   "2026-07-15",
   "2026-07-16",
