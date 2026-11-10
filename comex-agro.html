@@ -156,6 +156,10 @@ tbody tr:hover td{background:var(--surface)}
 .minibar.neg{background:var(--s2)}
 /* botões e menus */
 .tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.x-busca{flex:1 1 240px}.x-busca input{flex:1 1 auto;min-width:0}
+.tbl-links{display:flex;justify-content:flex-end;font-size:12.5px;color:var(--ink-3);margin-bottom:-6px}
+.tbl-links>span{display:inline-flex;gap:6px;align-items:center}
+.lnk{font:inherit;border:0;background:transparent;color:var(--brand);cursor:pointer;padding:2px 0;text-decoration:underline;text-underline-offset:2px}
 .btn{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover{border-color:var(--brand)}
 .btn svg{width:15px;height:15px;flex:none}
@@ -300,15 +304,15 @@ footer.rod a{color:var(--brand)}
     <div class="f" data-g="fl"><span>Fluxo</span><div class="seg" id="seg-fl"><button data-v="E">Exportação</button><button data-v="I">Importação</button></div></div>
     <div class="f" data-g="uf"><span>Recorte</span><select id="sel-uf" aria-label="Recorte geográfico"></select></div>
     <div class="f" data-g="grp"><span>Grupo</span><div class="seg" id="seg-grp"><button data-v="0">Agronegócio</button><button data-v="1">Insumos do agro</button></div></div>
-    <div class="f" data-g="ref"><span>Mês</span><select id="sel-ref" aria-label="Mês de referência"></select></div>
-    <div class="f" data-g="per"><span>Período</span><div class="seg" id="seg-per"><button data-v="mes">Mês</button><button data-v="acum">Acumulado do ano</button><button data-v="m12">12 meses</button><button data-v="custom">Escolher meses</button></div></div>
+    <div class="f" data-g="per"><span>Período</span><div class="seg" id="seg-per"><button data-v="mes">Mês</button><button data-v="acum">Acumulado do ano</button><button data-v="m12">12 meses</button><button data-v="custom">Escolher meses</button><button data-v="serie" id="per-serie">Série histórica</button></div></div>
+    <div class="f" data-g="ref"><span id="ref-lab">Mês</span><select id="sel-ref" aria-label="Mês de referência"></select></div>
     <div class="f" data-g="meses" hidden><span>Meses</span><button class="btn sm" id="btn-meses" type="button" aria-haspopup="true" aria-expanded="false"></button>
       <div class="menu mpick" id="menu-meses" hidden role="dialog" aria-label="Escolher meses">
         <p class="note" style="margin:0 0 8px">Clique nos meses (Shift + clique marca um intervalo; clique no ano marca o ano inteiro). A comparação é com os mesmos meses do ano anterior.</p>
         <div id="mpick-anos"></div>
         <div class="tools mpick-pe"><span class="note" id="mpick-n"></span><button class="btn sm" id="mpick-limpar" type="button">Limpar</button><button class="btn sm solid" id="mpick-ok" type="button">Aplicar</button></div>
       </div></div>
-    <div class="f" data-g="unit"><span>Volume</span><div class="seg" id="seg-unit"><button data-v="t">toneladas</button><button data-v="kg">kg</button></div></div>
+    <div class="f" data-g="serie" hidden><span>De</span><select id="x-de" aria-label="Ano inicial"></select><span>a</span><select id="x-ate" aria-label="Ano final"></select><div class="seg" id="seg-x-gran"><button data-v="ano">Anual</button><button data-v="mes">Mensal</button></div></div>
   </div>
   <div class="note" id="flnote" hidden>Na importação, a UF é a do domicílio fiscal do importador, que pode ser diferente de onde a mercadoria entra ou é consumida.</div>
 </nav>
@@ -369,28 +373,23 @@ footer.rod a{color:var(--brand)}
     <div class="card">
       <div class="tools">
         <div class="f"><span>Linhas</span><div class="seg" id="seg-x-rows"><button data-v="prod" title="Setor › subsetor › produto › NCM (Agrostat no agronegócio; FARSUL nos insumos)">Setores e produtos</button><button data-v="sh" title="Capítulo (SH2) › posição (SH4) › NCM">Capítulos SH</button><button data-v="pais">Países</button><button data-v="bloco">Blocos</button><button data-v="uf">Estados</button></div></div>
-        <div class="f"><span>Tabela</span><div class="seg" id="seg-x-mode"><button data-v="comp">Comparação de períodos</button><button data-v="serie">Série histórica</button></div></div>
-        <div class="f" id="x-per-f" hidden><span>De</span><select id="x-de" aria-label="Ano inicial"></select><span>a</span><select id="x-ate" aria-label="Ano final"></select><div class="seg" id="seg-x-gran"><button data-v="ano">Anual</button><button data-v="mes">Mensal</button></div></div>
         <div class="f" id="x-meas-f" hidden><span>Medida</span><div class="seg" id="seg-x-meas"><button data-v="v">Valor (US$)</button><button data-v="kg">Volume</button></div></div>
       </div>
       <div class="tools">
         <div class="f" id="x-fpais-f"><span>País/bloco</span><select id="x-fpais" aria-label="Filtrar país ou bloco"></select></div>
         <div class="f" id="x-fprod-f"><span>Produto</span><select id="x-fprod" aria-label="Filtrar setor ou produto"></select></div>
-        <input type="search" id="x-q" placeholder="Buscar produto, NCM ou país" aria-label="Buscar">
-        <button class="btn" id="x-expand">Expandir tudo</button>
-        <button class="btn" id="x-collapse">Recolher</button>
-        <span style="flex:1"></span>
-        <div class="acoes"><button class="btn solid" data-xl="x-tbl">Baixar em Excel</button><button class="btn" id="x-csv">Baixar CSV</button></div>
+        <div class="f x-busca"><span>Buscar</span><input type="search" id="x-q" placeholder="Produto, NCM ou país" aria-label="Buscar produto, NCM ou país"></div>
       </div>
+      <div class="tbl-links"><span id="x-links"><button type="button" class="lnk" id="x-expand">Abrir todos os níveis</button><span aria-hidden="true">·</span><button type="button" class="lnk" id="x-collapse">Fechar todos</button></span></div>
       <div class="tbl-wrap" style="max-height:640px"><table id="x-tbl"></table></div>
       <div class="foot" id="x-foot"></div>
+      <div class="actions"><span class="fonte"></span><div class="btns"><button type="button" class="btn" id="x-csv">Baixar CSV</button><button type="button" class="btn" data-xl="x-tbl" aria-haspopup="true" aria-expanded="false">Baixar em Excel</button></div></div>
     </div>
   </section>
 
   <section id="v-mercados" hidden>
     <div class="view-title"><h2 id="k-title"></h2><span class="note" id="k-sub"></span></div>
-    <div class="tools"><div class="f"><span>Produto</span><select id="k-prod" aria-label="Produto"></select></div>
-      <div class="f"><span>Série histórica</span><select id="k-de" aria-label="Ano inicial da série"></select><span>a</span><select id="k-ate" aria-label="Ano final da série"></select></div></div>
+    <div class="tools"><div class="f"><span>Produto</span><select id="k-prod" aria-label="Produto"></select></div></div>
     <div class="kpis" id="k-kpis"></div>
     <div class="card"><div class="card-h"><div><h3 id="k-map-t">Mapa</h3><p id="k-map-s"></p></div><div class="acoes"><button class="btn sm" data-png="k-map">Baixar imagem</button></div></div><div id="k-map" class="chart"></div><div class="legend-q" id="k-map-leg"></div></div>
     <div class="card">
@@ -403,13 +402,13 @@ footer.rod a{color:var(--brand)}
     <div class="grid2">
       <div class="card"><div class="card-h"><div><h3 id="k-t-t">Mercados</h3><p id="k-t-s"></p></div><div class="acoes"><button class="btn solid sm" data-xl="k-tbl">Baixar em Excel</button></div></div>
         <div class="tbl-wrap" style="max-height:520px"><table class="rank" id="k-tbl"></table></div></div>
-      <div class="card"><div class="card-h"><div><h3 id="k-hhi-t">Concentração ao longo do tempo</h3><p id="k-hhi-s">Índice Herfindahl-Hirschman (HHI) de cada ano.</p></div><div class="acoes"><button class="btn sm" data-png="k-hhi">Baixar imagem</button></div></div>
+      <div class="card"><div class="card-h"><div><h3 id="k-hhi-t">Concentração ao longo do tempo</h3><p id="k-hhi-s">Índice Herfindahl-Hirschman (HHI) de cada ano.</p></div><div class="acoes"><div class="seg seg-k-anos"><button data-v="10">Últimos 10 anos</button><button data-v="tudo">Desde 1997</button></div><button class="btn sm" data-png="k-hhi">Baixar imagem</button></div></div>
         <div id="k-hhi" class="chart"></div>
         <div class="foot">HHI vai de 0 a 10.000. Abaixo de 1.500: concentração baixa; de 1.500 a 2.500: moderada; acima de 2.500: alta.</div></div>
     </div>
     <div class="card">
       <div class="card-h"><div><h3 id="k-cmp-t">Comparar mercados</h3><p id="k-cmp-s">Valor anual em US$ FOB. Escolha até 5 países.</p></div>
-        <div class="acoes"><select id="k-add" aria-label="Adicionar país"></select><button class="btn sm" data-png="k-cmp">Baixar imagem</button></div></div>
+        <div class="acoes"><select id="k-add" aria-label="Adicionar país"></select><div class="seg seg-k-anos"><button data-v="10">Últimos 10 anos</button><button data-v="tudo">Desde 1997</button></div><button class="btn sm" data-png="k-cmp">Baixar imagem</button></div></div>
       <div class="chips" id="k-chips"></div>
       <div id="k-cmp" class="chart"></div>
     </div>
@@ -440,7 +439,6 @@ footer.rod a{color:var(--brand)}
       <div class="f-top">
         <div class="seg" id="seg-f-tipo"><button data-v="pais">País</button><button data-v="prod">Produto</button></div>
         <div class="busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input type="search" id="f-busca" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="f-opc" aria-label="Buscar país ou produto"><div class="opc" id="f-opc" role="listbox" hidden></div></div>
-        <div class="f"><span>Ano</span><select id="f-ano" aria-label="Ano"></select></div>
       </div>
       <p class="note" id="f-nota" style="margin:0"></p>
     </div>
@@ -525,7 +523,7 @@ function volUnit(){return S.unit==='t'?'t':'kg'}
 function vol(kg){return S.unit==='t'?kg/1000:kg}
 function volC(kg){const x=vol(kg),a=Math.abs(x),u=volUnit(),w=t=>`<span class="u">${t}</span>`;
   if(a>=1e9)return nf2.format(x/1e9)+w('bi '+u);if(a>=1e6)return nf2.format(x/1e6)+w('mi '+u);if(a>=1e3)return nf1.format(x/1e3)+w('mil '+u);return nf0.format(x)+w(u)}
-function volT(kg){return S.unit==='t'?nfT.format(kg/1000):nf0.format(kg)}
+function volT(kg){const t=kg/1000,a=Math.abs(t);return nf(a===0||a>=100?1:a>=1?2:3).format(t)}
 function pctv(a,b){return (a>0&&isFinite(b))?(b/a-1)*100:null}
 function dlt(p,suffix){if(p===null||!isFinite(p))return '<span class="d flat">—</span>'+(suffix?' '+suffix:'');
   const c=Math.abs(p)<0.05?'flat':(p>0?'up':'down'),ar=c==='flat'?'■':(p>0?'▲':'▼');
@@ -560,7 +558,7 @@ let D,NC,NY,NA,ANOS,AI={},YI={},ncG,ncS,ncSub,ncP,ncSH4,paisByName={},UFK={},MON
 const CH={E:new Map(),I:new Map()},CHA={E:new Map(),I:new Map()},LOADING={};
 const S={tab:'geral',fl:'E',uf:'RS',grp:0,ref:null,per:'mes',unit:'t',gMeas:'v',gDiv:'prod',
   xRows:'prod',xMode:'comp',xMeas:'v',xPais:'',xProd:'',xQ:'',open:new Set(),
-  kProd:'',kSel:null,mProd:'arroz',mEq:0,gAno:'ano',sk:'bloco',tmPath:[],tmCor:'var',brModo:'per',cz:null,czE:'pct',rc:'pais',fi:'pais',fiPais:null,fiProd:null,fiM:'v',fiAno:0,xDe:0,xAte:0,xGran:'ano',kDe:0,kAte:0,mJan:'5',meses:new Set()};
+  kProd:'',kSel:null,mProd:'arroz',mEq:0,gAno:'ano',sk:'bloco',tmPath:[],tmCor:'var',brModo:'per',cz:null,czE:'pct',rc:'pais',fi:'pais',fiPais:null,fiProd:null,fiM:'v',xDe:0,xAte:0,xGran:'ano',kAnos:'10',mJan:'5',meses:new Set()};
 async function loadDims(){
   D=JSON.parse(await getText('comex-agro.json'));NC=D.ncms.length;NY=D.yms.length;D.yms.forEach((y,i)=>YI[y]=i);
   ANOS=[...new Set(D.arquivos.map(a=>a.ano))].sort((a,b)=>a-b);NA=ANOS.length;ANOS.forEach((a,i)=>AI[a]=i);
@@ -678,6 +676,7 @@ function montarQuadros(){
       card.append(row,box)}else card.append(row);
     for(const b of bts){b.classList.remove('sm');if(b.dataset.png!=null)b.innerHTML=ICO_IMG+'Baixar imagem';if(b.dataset.xl!=null){b.innerHTML=ICO_DL+'Baixar em Excel';b.setAttribute('aria-haspopup','true');b.setAttribute('aria-expanded','false')}btns.append(b)}
   });
+  const bx=document.querySelector('[data-xl="x-tbl"]');if(bx)bx.innerHTML=ICO_DL+'Baixar em Excel';
   const ult=D.yms[NY-1];document.querySelectorAll('.actions .fonte').forEach(f=>f.textContent=`Fonte: ComexStat/MDIC; agronegócio pela lista do Agrostat/MAPA, insumos pela lista da FARSUL. Dados até ${ymLong(ult)}.`);
 }
 function drawChart(id){const el=document.getElementById(id),sp=CHARTS[id];if(!el||!sp)return;
@@ -1093,9 +1092,9 @@ async function renderX(tk,rebuild){
   const {nodes,tree,label}=XC,q=S.xQ.trim().toLowerCase(),u=volUnit(),serie=S.xMode==='serie';
   $('#x-title').textContent=`${flName(S.fl,1)} · ${grpName(S.grp).toLowerCase()} · ${recName(S.uf)}`;
   $('#x-sub').textContent=!serie?`${P.label} comparado com ${P.labelA}`:`Série ${XS.anual?'anual':'mensal'}, ${XS.lab[0]} a ${XS.lab[XS.lab.length-1]}`;
-  $('#x-meas-f').hidden=$('#x-per-f').hidden=!serie;
+  $('#x-meas-f').hidden=!serie;
   $('#x-fpais-f').hidden=!(S.xRows==='prod'||S.xRows==='sh'||S.xRows==='uf');
-  $('#x-expand').hidden=$('#x-collapse').hidden=!tree;
+  $('#x-links').hidden=!tree;
   const match=o=>!q||o.name.toLowerCase().includes(q)||(o.code&&o.code.startsWith(q));
   const hasMatch=o=>match(o)||[...o.ch.values()].some(hasMatch);
   const tot=node('t','Total',0);nodes.forEach(o=>{for(let j=0;j<XS.L;j++){tot.v[j]+=o.v[j];tot.kg[j]+=o.kg[j]}});
@@ -1143,7 +1142,7 @@ function fillX(){anoOpts('#x-de',S.xDe);anoOpts('#x-ate',S.xAte)}
 /* ---------- MERCADOS ---------- */
 const MK={};
 async function renderMk(tk){
-  const {fl,grp,ref}=S,uf=ufIdx(),P=periodIdx(S.per,ref),f=andF(baseFilt(uf,grp),prodFilter(S.kProd)),serAnos=faixa(S.kDe,S.kAte);
+  const {fl,grp,ref}=S,uf=ufIdx(),P=periodIdx(S.per,ref),f=andF(baseFilt(uf,grp),prodFilter(S.kProd)),ultA=ANOS[NA-1],serAnos=S.kAnos==='tudo'?ANOS.slice():faixa(Math.max(ANOS[0],ultA-9),ultA);document.querySelectorAll('.seg-k-anos button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.kAnos)));
   await ensure(fl,anosDe(P.A,P.B));await ensure(fl,serAnos,'anual');if(tk!==RQ)return;
   const m=scan(fl,D.paises.length,(c,i)=>c.pa[i],f),NP=D.paises.length,ma=scanA(fl,NP,(c,i)=>c.pa[i],f,serAnos);
   const prodTxt=S.kProd?$('#k-prod').selectedOptions[0].textContent.replace(' (setor inteiro)',''):grpName(grp);
@@ -1397,7 +1396,7 @@ function areaSerie(){return S.uf==='BR'?'BR':S.uf}
 function carregarSerie(){const a=areaSerie();if(SERIE[a])return Promise.resolve(SERIE[a]);if(SERIEL[a])return SERIEL[a];
   const nome=D.extras&&D.extras['serie_'+a];if(!nome)return Promise.resolve(null);
   return SERIEL[a]=(async()=>{busy(`Carregando a série histórica de ${recName(S.uf)}…`);
-    try{const j=JSON.parse(await getText(nome)),o={};for(const k of ['pais_ano','pais_ytd','prod_ano','prod_ytd','prod_mes'])o[k]=parseBin(await gunzipB64(j[k]));o.dn={};return SERIE[a]=o}
+    try{const j=JSON.parse(await getText(nome)),o={};for(const k of ['pais_ano','pais_ytd','prod_ano','prod_ytd','prod_mes','pais_mes'])if(j[k])o[k]=parseBin(await gunzipB64(j[k]));o.dn={};return SERIE[a]=o}
     catch(e){delete SERIEL[a];throw e}finally{busy(null)}})()}
 /* tabela densa (chave × tempo) do fluxo e grupo atuais */
 function densa(SR,nome,K,T,col){const f=S.fl==='E'?0:1,key=nome+f+S.grp;if(SR.dn[key])return SR.dn[key];
@@ -1407,6 +1406,17 @@ function densa(SR,nome,K,T,col){const f=S.fl==='E'?0:1,key=nome+f+S.grp;if(SR.dn
 function totais(A){if(A.tot)return A.tot;const t=new Float64Array(NA),tk=new Float64Array(NA);for(let k=0;k<A.K;k++)for(let a=0;a<NA;a++){t[a]+=A.v[k*NA+a];tk[a]+=A.kg[k*NA+a]}return A.tot={v:t,kg:tk}}
 function perAno(ano){const parc=ano===VULT&&VMU<12,a=ano-VA0;
   return {ano,a,parc,mes:parc?VMU:12,lab:parc?`jan–${MES[VMU-1]}/${ano}`:String(ano),labA:parc?`jan–${MES[VMU-1]}/${ano-1}`:String(ano-1),temA:a>0}}
+/* janeiro até o mês 'mes' de cada ano (fichas): ano inteiro, o corte do último mês ou a soma dos meses */
+function serieAte(SR,tipo,ano,mes){const K=tipo==='pais'?D.paises.length:D.prods.length,f=S.fl==='E'?0:1,key=tipo+'_ate'+mes+f+S.grp;let C=SR.dn[key];
+  if(!C){if(mes===12)C=densa(SR,tipo+'_ano',K,NA,'an');else if(mes===VMU||!SR[tipo+'_mes'])C=densa(SR,tipo+'_ytd',K,NA,'an');
+    else{const M=densa(SR,tipo+'_mes',K,NY,'j'),v=new Float64Array(K*NA),kg=new Float64Array(K*NA),js=[];
+      D.yms.forEach((ym,j)=>{if(ym%100<=mes)js.push([j,Math.floor(ym/100)-VA0])});
+      for(let k=0;k<K;k++)for(const [j,a] of js){v[k*NA+a]+=M.v[k*NY+j];kg[k*NA+a]+=M.kg[k*NY+j]}C={v,kg,K,T:NA}}
+    SR.dn[key]=C}
+  const per=mes===12?'':mes===1?'jan':`jan–${MES[mes-1]}`,lab=y=>mes===12?String(y):`${per}/${y}`,a=ano-VA0;
+  const anos=ANOS.filter(y=>y<VULT||mes<=VMU||(mes===12&&VMU===12));
+  const p={ano,a,mes,per,parc:mes<12,lab:lab(ano),labA:lab(ano-1),temA:a>0};
+  return {K,C,p,anos,cur:(k,fd='v')=>C[fd][k*NA+a],ant:(k,fd='v')=>a<1?0:C[fd][k*NA+a-1]}}
 function serie(SR,tipo,ano){const K=tipo==='pais'?D.paises.length:D.prods.length,A=densa(SR,tipo+'_ano',K,NA,'an'),Y=densa(SR,tipo+'_ytd',K,NA,'an'),p=perAno(ano);
   return {K,A,Y,p,cur:(k,f='v')=>A[f][k*NA+p.a],ant:(k,f='v')=>p.a<1?0:(p.parc?Y:A)[f][k*NA+p.a-1]}}
 /* linha do tempo das animações e séries: segue o ano do mês de referência */
@@ -1620,23 +1630,22 @@ function abrirFicha(tipo,k){S.fi=tipo;if(tipo==='pais')S.fiPais=k;else S.fiProd=
   try{document.querySelector('.bar').scrollIntoView({block:'start'})}catch(e){}}
 async function renderFichas(tk){
   syncSeg('#seg-f-tipo',S.fi);syncSeg('#seg-f-m',S.fiM);
-  if(!S.fiAno)S.fiAno=VULT;
-  $('#f-ano').innerHTML=ANOS.slice().reverse().map(a=>`<option value="${a}"${a===S.fiAno?' selected':''}>${a===VULT&&VMU<12?a+' (jan–'+MES[VMU-1]+')':a}</option>`).join('');
   const SR=await carregarSerie();if(tk!==RQ)return;
   if(!SR){$('#f-kpis').innerHTML='';$('#f-title').textContent='Fichas';$('#f-sub').textContent='Sem série histórica para este recorte.';return}
-  const ehP=S.fi==='pais',ser=serie(SR,ehP?'pais':'prod',S.fiAno),p=ser.p,K=ser.K,A=ser.A,Y=ser.Y,T=totais(A),TY=totais(Y),ex=S.fl==='E',rn=recName(S.uf);
+  const ehP=S.fi==='pais',ser=serieAte(SR,ehP?'pais':'prod',Math.floor(S.ref/100),S.ref%100),p=ser.p,K=ser.K,C=ser.C,TC=totais(C),ex=S.fl==='E',rn=recName(S.uf);
   const rows=[];for(let k=0;k<K;k++){const b=ser.cur(k);if(b>0)rows.push({k,b})}rows.sort((x,y)=>y.b-x.b);
   let sel=ehP?S.fiPais:S.fiProd;if(sel==null)sel=rows.length?rows[0].k:0;if(ehP)S.fiPais=sel;else S.fiProd=sel;
   const nome=k=>ehP?D.paises[k][1]:nomeP(k),lista=rows.slice();if(!lista.some(r=>r.k===sel))lista.unshift({k:sel,b:0});
   FB.itens=lista.map(r=>({k:r.k,n:nome(r.k),q:semAcento(nome(r.k)),b:r.b}));FB.lab=p.lab;const inp=$('#f-busca');inp.placeholder=ehP?'Digite um país':'Digite um produto';if(document.activeElement!==inp)inp.value=nome(sel);
   const nm=nome(sel),b=ser.cur(sel),a=ser.ant(sel),kb=ser.cur(sel,'kg'),ka=ser.ant(sel,'kg'),pos=rows.findIndex(r=>r.k===sel)+1;
-  const TB=T.v[p.a],TA=p.a<1?0:(p.parc?TY:T).v[p.a-1],shB=TB?b/TB*100:null,shA=TA?a/TA*100:null;
+  const TB=TC.v[p.a],TA=p.a<1?0:TC.v[p.a-1],shB=TB?b/TB*100:null,shA=TA?a/TA*100:null;
   $('#f-title').textContent=ehP?`${nm} · ${ex?'destino':'fornecedor'} · ${rn}`:`${nm} · ${flName(S.fl)} · ${rn}`;
   $('#f-sub').textContent=`${grpName(S.grp)} · indicadores de ${p.lab}, comparados com ${p.labA}`;
-  $('#f-nota').textContent=ehP?`Digite o nome do país, ou clique num país no Sankey (Visão geral) ou na corrida de barras (Mercados).`:`Digite o nome do produto, ou clique num produto na corrida de barras (Mercados) ou no treemap da Visão geral.`;
-  const anos=p.parc?ANOS.slice():ANOS.filter(y=>!(y===VULT&&VMU<12)),ai=anos.map(y=>y-VA0),SA=p.parc?Y:A,TS=p.parc?TY:T,perTxt=p.parc?` · jan–${MES[VMU-1]} de cada ano`:'';
+  $('#f-nota').textContent=(ehP?`Digite o nome do país, ou clique num país no Sankey (Visão geral) ou na corrida de barras (Mercados).`:`Digite o nome do produto, ou clique num produto na corrida de barras (Mercados) ou no treemap da Visão geral.`)+
+    ` A ficha mostra de janeiro até o mês escolhido em cima, em todos os anos; para ver um ano fechado, escolha dezembro.`;
+  const anos=ser.anos,ai=anos.map(y=>y-VA0),SA=C,TS=TC,perTxt=p.mes<12?` · ${p.per} de cada ano`:'';
   const d1=ai.map(j=>{const v=SA.v[sel*NA+j],k=SA.kg[sel*NA+j];return S.fiM==='v'?v:S.fiM==='kg'?k/1000:(k?v/(k/1000):null)}),d2=ai.map(j=>TS.v[j]?SA.v[sel*NA+j]/TS.v[j]*100:null);
-  const f1=S.fiM==='v'?usd:S.fiM==='kg'?(x=>compact(x)+' t'):(x=>'US$ '+nf0.format(x)+'/t'),xl=anos.map(String),rot=i=>(p.parc?`jan–${MES[VMU-1]}/`:'')+anos[i];
+  const f1=S.fiM==='v'?usd:S.fiM==='kg'?(x=>compact(x)+' t'):(x=>'US$ '+nf0.format(x)+'/t'),xl=anos.map(String),rot=i=>(p.mes<12?p.per+'/':'')+anos[i];
   $('#f-c1-t').textContent=(S.fiM==='v'?'Valor por ano (US$ FOB)':S.fiM==='kg'?'Volume por ano (toneladas)':'Preço médio por ano (US$ por tonelada)')+perTxt;
   $('#f-c1-s').textContent=`${nm} · ${rn}`;
   $('#f-c2-t').textContent=(ehP?`Participação no total ${ex?'exportado':'importado'} (%)`:`Participação em ${grpName(S.grp).toLowerCase()} (%)`)+perTxt;
@@ -1678,7 +1687,6 @@ function ligarVisual(){
   $('#k-rc').addEventListener('click',e=>{const r=e.target.closest('.row');if(r&&S.rc!=='regiao')abrirFicha(S.rc,+r.dataset.k)});
   seg('#seg-f-tipo',v=>{S.fi=v;$('#f-busca').value='';render()});
   seg('#seg-f-m',v=>{S.fiM=v;render(false)});
-  $('#f-ano').addEventListener('change',e=>{S.fiAno=+e.target.value;render()});
   $('#f-list').addEventListener('click',e=>{const b=e.target.closest('[data-pais],[data-prod]');if(!b)return;if(b.dataset.pais!=null)abrirFicha('pais',+b.dataset.pais);else abrirFicha('prod',+b.dataset.prod)});
   const inp=$('#f-busca');
   inp.addEventListener('focus',()=>{inp.select();fbMostrar('')});
@@ -1689,13 +1697,15 @@ function ligarVisual(){
   $('#f-opc').addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(b){e.preventDefault();fbEscolher(+b.dataset.i)}});
 }
 
-const TAB_FILTERS={geral:['fl','uf','grp','ref','per','meses','unit'],explorador:['fl','uf','grp','ref','per','meses','unit'],mercados:['fl','uf','grp','ref','per','meses','unit'],fichas:['fl','uf','grp'],importacoes:['ref'],dados:[]};
-function syncAll(){syncSeg('#seg-fl',S.fl);syncSeg('#seg-grp',S.grp);syncSeg('#seg-unit',S.unit);syncSeg('#seg-per',S.per);syncSeg('#seg-g-meas',S.gMeas);syncSeg('#seg-g-ano',S.gAno);syncSeg('#seg-g-div',S.gDiv);
+const TAB_FILTERS={geral:['fl','uf','grp','ref','per','meses'],explorador:['fl','uf','grp','ref','per','meses','serie'],mercados:['fl','uf','grp','ref','per','meses'],fichas:['fl','uf','grp','ref'],importacoes:['ref'],dados:[]};
+function syncAll(){const serieX=S.tab==='explorador'&&S.xMode==='serie';syncSeg('#seg-fl',S.fl);syncSeg('#seg-grp',S.grp);syncSeg('#seg-per',serieX?'serie':S.per);syncSeg('#seg-g-meas',S.gMeas);syncSeg('#seg-g-ano',S.gAno);syncSeg('#seg-g-div',S.gDiv);
   syncSeg('#seg-x-rows',S.xRows);syncSeg('#seg-x-mode',S.xMode);syncSeg('#seg-x-meas',S.xMeas);syncSeg('#seg-x-gran',S.xGran);
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
   const vis=TAB_FILTERS[S.tab];document.querySelectorAll('#filters [data-g]').forEach(e=>e.hidden=!vis.includes(e.dataset.g));
-  $('#filters').hidden=!vis.length;
-  if(vis.includes('per')&&S.per==='custom'){document.querySelector('#filters [data-g="ref"]').hidden=true}else document.querySelector('#filters [data-g="meses"]').hidden=true;
+  $('#filters').hidden=!vis.length;$('#per-serie').hidden=S.tab!=='explorador';
+  const g=k=>document.querySelector(`#filters [data-g="${k}"]`);
+  if(serieX){g('ref').hidden=true;g('meses').hidden=true}else{g('serie').hidden=true;if(vis.includes('per')&&S.per==='custom')g('ref').hidden=true;else g('meses').hidden=true}
+  $('#ref-lab').textContent=S.tab==='fichas'?'Até o mês':'Mês';
   $('#btn-meses').textContent=(S.meses.size?rotMeses(S.meses):'escolher')+' ▾';
   if(S.tab==='importacoes')$('#sel-ref').value=String(S.ref);
   $('#flnote').hidden=!vis.includes('uf')||!(S.fl==='I'&&S.uf!=='BR');
@@ -1746,17 +1756,15 @@ async function init(){
   $('#fontes').textContent=FONTES+' Valores em US$ FOB; volume em peso líquido. Metodologia completa na Central de dados.';
   $('#ultimo').textContent=ymLong(last);$('#atualizado').textContent=at;
   fillSelects();
-  const ultAno=ANOS[NA-1];S.xAte=S.kAte=ultAno;S.xDe=S.kDe=Math.max(ANOS[0],ultAno-9);fillX();anoOpts('#k-de',S.kDe);anoOpts('#k-ate',S.kAte);
+  const ultAno=ANOS[NA-1];S.xAte=ultAno;S.xDe=Math.max(ANOS[0],ultAno-9);fillX();
   $('#m-jan-tudo').textContent=`Desde ${ANOS[0]}, por ano`;
   const ajustaX=()=>{if(S.xDe>S.xAte)[S.xDe,S.xAte]=[S.xAte,S.xDe];fillX();render()};
   $('#x-de').addEventListener('change',e=>{S.xDe=+e.target.value;ajustaX()});
   $('#x-ate').addEventListener('change',e=>{S.xAte=+e.target.value;ajustaX()});
   bindSeg('#seg-x-gran','xGran');
-  const ajustaK=()=>{if(S.kDe>S.kAte)[S.kDe,S.kAte]=[S.kAte,S.kDe];anoOpts('#k-de',S.kDe);anoOpts('#k-ate',S.kAte);render()};
-  $('#k-de').addEventListener('change',e=>{S.kDe=+e.target.value;ajustaK()});
-  $('#k-ate').addEventListener('change',e=>{S.kAte=+e.target.value;ajustaK()});
-  bindSeg('#seg-fl','fl');bindSeg('#seg-grp','grp',true,()=>{fillSelects();S.xProd='';S.kProd='';render()});bindSeg('#seg-unit','unit',false,()=>render(false));bindSeg('#seg-per','per',false,()=>{if(S.per==='custom'){if(!S.meses.size){const y=Math.floor(S.ref/100);for(let m=1;m<=S.ref%100;m++)S.meses.add(y*100+m)}S.ref=Math.max(...S.meses);render(false);setTimeout(abrirMeses,0)}else{$('#sel-ref').value=String(S.ref);render(false)}});ligarMeses();
-  bindSeg('#seg-g-meas','gMeas');bindSeg('#seg-g-ano','gAno');bindSeg('#seg-g-div','gDiv');bindSeg('#seg-x-rows','xRows');bindSeg('#seg-x-mode','xMode',false,()=>render(false));
+  document.querySelectorAll('.seg-k-anos').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.kAnos=b.dataset.v;render()}));
+  bindSeg('#seg-fl','fl');bindSeg('#seg-grp','grp',true,()=>{fillSelects();S.xProd='';S.kProd='';render()});bindSeg('#seg-per','per',false,()=>{if(S.per==='serie'){S.per=S.perAnt||'mes';S.xMode='serie';render(false);return}S.perAnt=S.per;S.xMode='comp';if(S.per==='custom'){if(!S.meses.size){const y=Math.floor(S.ref/100);for(let m=1;m<=S.ref%100;m++)S.meses.add(y*100+m)}S.ref=Math.max(...S.meses);render(false);setTimeout(abrirMeses,0)}else{$('#sel-ref').value=String(S.ref);render(false)}});ligarMeses();
+  bindSeg('#seg-g-meas','gMeas');bindSeg('#seg-g-ano','gAno');bindSeg('#seg-g-div','gDiv');bindSeg('#seg-x-rows','xRows');
   bindSeg('#seg-x-meas','xMeas',false,()=>render(false));bindSeg('#seg-m-prod','mProd');bindSeg('#seg-m-eq','mEq',true);bindSeg('#seg-m-jan','mJan');
   $('#sel-ref').addEventListener('change',e=>{S.ref=+e.target.value;render()});
   $('#sel-uf').addEventListener('change',e=>{S.uf=e.target.value;render()});
